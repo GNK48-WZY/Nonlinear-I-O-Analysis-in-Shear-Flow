@@ -1,2 +1,3 @@
-# PRE-Model
-ode45 &amp; LMI
+# Nonlinear input output stability analysis in shear flow model
+
+
