@@ -25,6 +25,7 @@ parfor ind_Re = 1:length(Re_list)
     [u_upper_bound_max_SOS(ind_Re), ind_u_upper_bound_max_SOS(ind_Re)]= max(local_u_upper_bound);
     [Gamma_theorem_max_SOS(ind_Re), ind_Gamma_theorem_max_SOS(ind_Re)]= max(local_Gamma_theorem);
     [Gamma_theorem_min_SOS(ind_Re), ind_Gamma_theorem_min_SOS(ind_Re)]= min(local_Gamma_theorem);
+    Gamma_theorem_SOS(ind_Re, :) = local_Gamma_theorem;
 end
 
 

@@ -1,13 +1,16 @@
-% addpath(genpath('/home/zhw22003/PRE-Model/YALMIP-master'))
-% system('export PATH=$PATH:/home/zhw22003/PRE-Model/mosek/10.2/tools/platform/linux64x86/bin')
-% addpath(genpath('/home/zhw22003/PRE-Model/mosek'))
+% addpath(genpath('/home/zhw22003/YALMIP-master'))
+% system('export PATH=$PATH:/home/zhw22003/mosek/10.2/tools/platform/linux64x86/bin')
+% addpath(genpath('/home/zhw22003/mosek'))
 Re_list = logspace(log10(200), log10(2000), 16);
 delta_list = logspace(-6, 0, 200);
+% delta_list = 1e-6;
 % Re_list = logspace(log10(200), log10(2000), 4);
 % delta_list = logspace(-6, 0, 2);
 % Re_list= Re_list(1:5);
 % delta_list=delta_list(1:2);
 % epsilon = 0.01;
+% Re_list = 200;
+% delta_list = 1e-6;
 B = eye(9);
 C = eye(9);
 D = zeros(9,9);
@@ -38,11 +41,12 @@ for ind_Re = 1:length(Re_list)
    
 end
 
-save Bisection_2_5.mat
-function [local_forcing_amp, local_u_bisection, local_mid_u_bisection]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear, u,B,C, alpha,Beta,Gamma,KBG, KAG,KABG)
+% save Bisection_3_20.mat
+
+function [local_forcing_amp]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear, u,B,C, alpha,Beta,Gamma,KBG, KAG,KABG)
     local_forcing_amp = NaN*ones(1, length(delta_list)); % 1 x length(delta_list)
-    local_u_bisection = cell(1, length(delta_list)); % Cell array of size 1 x length(delta_list)
-    local_mid_u_bisection = NaN*ones(1, length(delta_list)); % 1 x length(delta_list)
+%     local_u_bisection = cell(1, length(delta_list)); % Cell array of size 1 x length(delta_list)
+%     local_mid_u_bisection = NaN*ones(1, length(delta_list)); % 1 x length(delta_list)
 
     % Initialize other variables
     local_u_upper_bound = NaN*ones(1, length(delta_list));
@@ -131,7 +135,7 @@ for ind_delta = 1:length(delta_list)
 
         T = 20000;
         omega=1;
-        [local_forcing_amp, local_u_bisection, local_mid_u_bisection] = compute_norm_u(Re, A, B, T, omega,local_deltaf(ind_delta), local_u_upper_bound(ind_delta), delta_list, alpha,Beta,Gamma,KBG, KAG,KABG);
+        [local_forcing_amp(ind_delta)] = compute_norm_u(Re, A, B, T, omega,local_deltaf(ind_delta), local_u_upper_bound(ind_delta), delta_list, alpha,Beta,Gamma,KBG, KAG,KABG);
     else
         disp(['No feasible solution found for Re = ', num2str(Re), ', delta = ', num2str(delta_list(ind_delta))]);
         disp(['YALMIP error: ', yalmiperror(result_yalmip.problem)]);
@@ -259,7 +263,7 @@ else
 end
 end
 
-function [local_forcing_amp, local_u_bisection, local_mid_u_bisection] = compute_norm_u(Re, A, B, T, omega, deltaf, u_upper_bound, delta_list, alpha,Beta,Gamma,KBG, KAG,KABG)
+function [local_forcing_amp] = compute_norm_u(Re, A, B, T, omega, deltaf, u_upper_bound, delta_list, alpha,Beta,Gamma,KBG, KAG,KABG)
 
 
 ini=randn(9,1);
@@ -307,60 +311,20 @@ norm_u=max(a_square);
 
 
 % %Bisection
-max_u = 0.01; 
+max_u = 1e-3; 
 min_u = 0;  
 % Tolerance and maximum iterations
-tol = 1e-14;
-maxIter = 100;
+tol = 1e-12;
+maxIter = 300;
 
 % Call the bisection method
 % u0=zeros(9,1);
 % [forcing_amp, iterations] = bisectionMethod(min_u, max_u, tol, maxIter, A, B,tspan, u0);
-num_simulations = 20;  % Number of simulations per step
-[local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisection] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations,deltaf,delta_list,alpha,Beta,Gamma,KBG, KAG,KABG);
+num_simulations = 1;  % Number of simulations per step
+[local_forcing_amp, iterations,norm_history, mid_u_history] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations,deltaf,delta_list,alpha,Beta,Gamma,KBG, KAG,KABG);
 % Display results
 fprintf('Approximated root: %.20f\n', local_forcing_amp);
 fprintf('Number of iterations: %d\n', iterations);
-% 
-% %% t vs local_mid_u_bisection
-% t = linspace(0, 10, 40); % Creates a 1x40 time vector from 0 to 10
-% loglog(t, local_mid_u_bisection);
-% xlabel('Time');
-% ylabel('Mid-u Values');
-% title('Log-Log Plot of Mid-u vs Time');
-% 
-% %% t vs local_u_bisection
-% % Initialize a vector to store the maximum values
-% max_values = zeros(40, 1); % 40 iterations
-% 
-% % Loop through each iteration
-% for iter = 1:40
-%     % Initialize a temporary vector to store max values for this iteration
-%     temp_max = zeros(20, 1); % 20 simulations per iteration
-%     
-%     % Loop through each simulation
-%     for sim = 1:20
-%         data = local_u_bisection{iter, sim}; % Extract data from the cell
-%         
-%         % Compute the maximum value for this simulation
-%         % Use max(data(:)) to ensure a scalar is returned
-%         temp_max(sim) = max(data(:));
-%     end
-%     
-%     % Store the maximum value across all simulations for this iteration
-%     max_values(iter) = max(temp_max);
-% end
-% 
-% % Create a time vector (iteration numbers)
-% t = 1:40;
-% 
-% % Plot the maximum values
-% loglog(t, max_values, '-o'); % Plot with circles for each point
-% xlabel('Iteration');
-% ylabel('Maximum Value');
-% title('Log-Log Plot of Maximum Values Across Simulations');
-% grid on;
-
 end
 
 function [du_dt, forcing] = ode_system_123(t, u, A, B, u_upper_bound, alpha,Beta,Gamma,KBG, KAG,KABG)
@@ -447,9 +411,10 @@ function [t, x, forcing] = rk5_solver(ode_func, tspan, u0)
     
     t = tspan; % Output time vector
 end
-function [local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisection] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations, deltaf, delta_list, alpha,Beta,Gamma,KBG, KAG,KABG)
+
+function [local_forcing_amp, iterations, norm_history, mid_u_history] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations, deltaf, delta_list, alpha,Beta,Gamma,KBG, KAG,KABG)
     local_u_bisection = cell(maxIter, num_simulations); % Preallocate cell array
-    local_mid_u_bisection = NaN * ones(maxIter, 1); % Preallocate array for mid_u values
+    mid_u_history = NaN * ones(maxIter, 1); % Preallocate array for mid_u values
 
     % Modified Bisection Method with multiple simulations per step
     for iter = 1:maxIter
@@ -461,12 +426,12 @@ function [local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisectio
             ini = randn(9, 1);
             u0_sim = deltaf * ini / norm(ini);
 %             u0_sim = zeros(9, 1); % Reset initial condition
-            [~, u, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, mid_u, alpha,Beta,Gamma,KBG, KAG,KABG), tspan, u0_sim);
+            [~, u, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, mid_u, alpha, Beta, Gamma, KBG, KAG, KABG), tspan, u0_sim);
             
             % Store u for this simulation and iteration
             local_u_bisection{iter, sim} = u;
 
-            % Calculate norm only for late time (last 50% of the time domain)
+            % Calculate norm only for late time
             late_time_indices = round(0.9 * length(tspan)):length(tspan);
             norm_values(sim) = mean(sqrt(sum(u(late_time_indices, :).^2, 2)));  % Average norm over late time
 %             norm_values_timehistory = sqrt(sum(u(late_time_indices, :).^2, 2));  % t over norm_values_timehistory
@@ -474,13 +439,14 @@ function [local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisectio
         end
 
         % Store mid_u for this iteration
-        local_mid_u_bisection(iter) = mid_u;
-
-        % Evaluate average norm
+        mid_u_history(iter) = mid_u;
         avg_norm = mean(norm_values);
+        norm_history(iter) = avg_norm;
+        % Evaluate average norm
+        fprintf('Iter %3d: mid forcing = %.3e, avg norm = %.3e\n', iter, mid_u, avg_norm);
 
         % Update bounds
-        if avg_norm > 10.^-8
+        if avg_norm > 1e-9
             max_u = mid_u;
         else
             min_u = mid_u;
@@ -492,106 +458,174 @@ function [local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisectio
             iterations = iter;
             break;
         end
+
+        
     end
 
-    % If max iterations reached
-    if iter == maxIter
-        local_forcing_amp = (min_u + max_u) / 2;
-        iterations = maxIter;
-    end
+%     % If max iterations reached
+%     if iter == maxIter
+%             local_forcing_amp = (min_u + max_u) / 2;
+%             iterations = maxIter;
+%     end
+
+    local_forcing_amp = (min_u + max_u) / 2;
+%     iterations = maxIter;
 
 %     % Save mid_u values for analysis
 %     save('local_mid_u_bisection.mat', 'local_mid_u_bisection');
 % 
 %     % Separate data into two groups based on local_forcing_amp
-     above_threshold = local_mid_u_bisection > local_forcing_amp;
-     below_threshold = local_mid_u_bisection <= local_forcing_amp;
+     above_threshold = mid_u_history > local_forcing_amp;
+     below_threshold = mid_u_history <= local_forcing_amp;
 %     
 %     save('local_u_bisection.mat',"local_u_bisection", "below_threshold", "above_threshold");
 % 
-    % Plot |u| as a function of time for both groups
-    colors = lines(16);
+%     Plot |u| as a function of time for both groups
 
+% Above threshold
     figure;
+    axes('XScale', 'log', 'YScale', 'log')
     hold on;
     for iter = 1:maxIter
         for sim = 1:num_simulations
             u = local_u_bisection{iter, sim};
             if above_threshold(iter)
-            plot(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2)), 'Color', colors(1, :)); % Above threshold in red
+            loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2))); % Above threshold in red
+            hold on;
             end
         end
     end
-    xlabel('Time');
-    ylabel('|u|');
-    title('|u| as a Function of Time');
-    legend('Above Threshold');
+    xlim([1e2, 2000])
+    xlabel('Time($\mathbf{t}$)','Interpreter', 'latex');
+    ylabel('$\|\mathbf{a}\|$','Interpreter', 'latex');
     hold off;
     
-
+% Below threshold
     figure;
+    axes('XScale', 'log', 'YScale', 'log')
     hold on;
     for iter = 1:maxIter
         for sim = 1:num_simulations
             u = local_u_bisection{iter, sim};
             if below_threshold(iter)
-            plot(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2)), 'Color', colors(1, :)); % Above threshold in red
+            loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2))); % below threshold
+            hold on;
             end
         end
     end
-    xlabel('Time');
-    ylabel('|u|');
-    title('|u| as a Function of Time');
-    legend('Below Threshold');
+    xlim([1e2, 2000])
+    xlabel('Time($\mathbf{t}$)','Interpreter', 'latex');
+    ylabel('$\|\mathbf{a}\|$','Interpreter', 'latex');
     hold off;
     
 end
 
-function [local_forcing_amp, iterations, local_u_bisection, local_mid_u_bisection] = bisectionMethodMulti2(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations, deltaf, delta_list, alpha,Beta,Gamma,KBG, KAG,KABG)
-    local_u_bisection = cell(length(maxIter), length(num_simulations)); % Preallocate cell array
-    local_mid_u_bisection = NaN * ones(length(maxIter), 1); % Preallocate array for mid_u values
+% function [local_forcing_amp, iterations, norm_history, mid_u_history] = bisectionMethodMulti2(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations, deltaf, delta_list, alpha, Beta, Gamma, KBG, KAG, KABG)
+%     local_u_bisection = cell(maxIter, num_simulations); % Preallocate cell array for trajectories
+%     mid_u_history = NaN * ones(maxIter, 1);            % Store mid-point forcing values
+%     norm_history  = NaN * ones(maxIter, 1);            % Store average norm at each iteration
+% 
+%     % Compute a reference norm at max_u
+%     [~, u_ref, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, max_u, alpha, Beta, Gamma, KBG, KAG, KABG), tspan, u0);
+%     ref_indices = round(0.1 * length(tspan)):length(tspan);
+%     ref_norm = mean(sqrt(sum(u_ref(ref_indices, :).^2, 2)));
+%     % Set a relative threshold (e.g. 50% of the reference norm)
+%     rel_threshold = 0.5;
+%     fprintf('Reference norm at max_u: %.3e, relative threshold: %.3e\n', ref_norm, rel_threshold * ref_norm);
+%     
+%     % Optionally, set a norm change tolerance (relative to ref_norm)
+%     norm_tol = 0.05 * ref_norm;
+%     
+%     converged = false;
+%     for iter = 1:maxIter
+%         mid_u = (min_u + max_u) / 2;
+%         norm_values = zeros(num_simulations, 1);
+% 
+%         % Run multiple simulations for current mid_u
+%         for sim = 1:num_simulations
+%             ini = randn(9, 1);
+%             u0_sim = deltaf * ini / norm(ini);
+%             [~, u, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, mid_u, alpha, Beta, Gamma, KBG, KAG, KABG), tspan, u0_sim);
+%             local_u_bisection{iter, sim} = u;
+%             late_time_indices = round(0.1 * length(tspan)):length(tspan);
+%             norm_values(sim) = mean(sqrt(sum(u(late_time_indices, :).^2, 2)));
+%         end
+% 
+%         mid_u_history(iter) = mid_u;
+%         avg_norm = mean(norm_values);
+%         norm_history(iter) = avg_norm;
+%         fprintf('Iter %3d: mid forcing = %.3e, avg norm = %.3e\n', iter, mid_u, avg_norm);
+% 
+%         % Update forcing bounds using relative threshold based on ref_norm.
+%         if avg_norm > rel_threshold * ref_norm
+%             max_u = mid_u;
+%         else
+%             min_u = mid_u;
+%         end
+% 
+%         % Check convergence of forcing amplitude difference.
+%         if abs(max_u - min_u) < tol
+%             converged = true;
+%             iterations = iter;
+%             break;
+%         end
+% 
+%         % Optionally, check if the norm itself stops changing.
+%         if iter > 1 && abs(norm_history(iter) - norm_history(iter-1)) < norm_tol
+%             converged = true;
+%             iterations = iter;
+%             break;
+%         end
+%     end
+% 
+%     if converged
+%         local_forcing_amp = mid_u;
+%     else
+%         local_forcing_amp = (min_u + max_u) / 2;
+%         iterations = maxIter;
+%     end
+% 
+%     % Prepare indices for plotting (make sure late_time_indices is defined)
+%     late_time_indices = round(0.1 * length(tspan)):length(tspan);
+% 
+%     % Determine which iterations are above or below the converged forcing amplitude.
+%     above_threshold = mid_u_history > local_forcing_amp;
+%     below_threshold = mid_u_history <= local_forcing_amp;
+% 
+%     % Plotting for "above threshold" cases
+%     figure;
+%     axes('XScale', 'log', 'YScale', 'log');
+%     hold on;
+%     for iter = 1:length(mid_u_history)
+%         for sim = 1:num_simulations
+%             u = local_u_bisection{iter, sim};
+%             if ~isempty(u) && above_threshold(iter)
+%                 loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2)), 'r'); % Red for above threshold
+%             end
+%         end
+%     end
+%     xlim([1e2, 2000]);
+%     xlabel('Time($\mathbf{t}$)', 'Interpreter', 'latex');
+%     ylabel('$\|\mathbf{a}\|$', 'Interpreter', 'latex');
+%     title('Above Threshold');
+%     hold off;
+%     
+%     % Plotting for "below threshold" cases
+%     figure;
+%     axes('XScale', 'log', 'YScale', 'log');
+%     hold on;
+%     for iter = 1:length(mid_u_history)
+%         for sim = 1:num_simulations
+%             u = local_u_bisection{iter, sim};
+%             if ~isempty(u) && below_threshold(iter)
+%                 loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2)), 'b'); % Blue for below threshold
+%             end
+%         end
+%     end
+%     xlim([1e2, 2000]);
+%     xlabel('Time($\mathbf{t}$)', 'Interpreter', 'latex');
+%     ylabel('$\|\mathbf{a}\|$', 'Interpreter', 'latex');
+%     title('Below Threshold');
+%     hold off;
+% end
 
-    % Modified Bisection Method with multiple simulations per step
-    for iter = 1:maxIter
-        mid_u = (min_u + max_u) / 2;
-        norm_values = zeros(num_simulations, 1);
-
-        % Run multiple simulations
-        for sim = 1:num_simulations
-            ini = randn(9, 1);
-            u0_sim = deltaf * ini / norm(ini);
-            u0_sim = 0*zeros(9,1);
-            [~, u, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, mid_u, alpha,Beta,Gamma,KBG, KAG,KABG), tspan, u0_sim);
-            norm_values(sim) = max(sqrt(sum(u.^2, 2)));  % Max norm
-
-            % Store u for this simulation and iteration
-            local_u_bisection{iter, sim} = u;
-        end
-
-        % Store mid_u for this iteration
-        local_mid_u_bisection(iter) = mid_u;
-
-        % Evaluate average norm
-        avg_norm = mean(norm_values);
-
-        % Update bounds
-        if avg_norm > 10.^-8
-            max_u = mid_u;
-        else
-            min_u = mid_u;
-        end
-
-        % Check convergence
-        if abs(max_u - min_u) < tol
-            local_forcing_amp = mid_u;
-            iterations = iter;
-            return;
-        end
-    end
-
-    % If max iterations reached
-    local_forcing_amp = (min_u + max_u) / 2;
-    iterations = maxIter;
-    save('local_mid_u_bisection.mat', 'local_mid_u_bisection');
-
-end

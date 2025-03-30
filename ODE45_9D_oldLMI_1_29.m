@@ -1,13 +1,30 @@
-addpath(genpath('/home/zhw22003/YALMIP-master'))
-system('export PATH=$PATH:/home/zhw22003/mosek/10.2/tools/platform/linux64x86/bin')
-addpath(genpath('/home/zhw22003/mosek'))
-Re_list = logspace(log10(200), log10(2000), 16);
-delta_list = logspace(-6, 0, 200);
+% addpath(genpath('/home/zhw22003/YALMIP-master'))
+% system('export PATH=$PATH:/home/zhw22003/mosek/10.2/tools/platform/linux64x86/bin')
+% addpath(genpath('/home/zhw22003/mosek'))
+
+
+% Re_list = 200;
+% delta_list = 0.5*1e-2;
+
+
+% Re_list = 200;
+% delta_list = 1e-4;
+
+% Re_list = 200;
+% delta_list = 1e-6;
+
+% Re_list = 1000;
+% delta_list = 1e-6;
+% 
+% Re_list = 2000;
+% delta_list = 1e-6;
 % Re_list = logspace(log10(200), log10(2000), 3);
 % delta_list = logspace(-6, 0, 5);
 % Re_list= Re_list(1:2);
 % delta_list=delta_list(1);
 % epsilon = 0.01;
+Re_list = logspace(log10(200), log10(2000), 16);
+delta_list = logspace(-6, 0, 200);
 B = eye(9);
 C = eye(9);
 D = zeros(9,9);
@@ -45,7 +62,7 @@ ind_Gamma_theorem_max = zeros(1,length(Re_list));
 ind_Gamma_theorem_min = zeros(1,length(Re_list));
 [RHS_J_mean_shear, nonlinear, u] = nonliner(alpha,Beta,Gamma,KBG, KAG,KABG);
 delete(gcp('nocreate'));
-parpool(32);
+% parpool(4);
 
 %% Theorem 5.1
 % parfor ind_Re = 1:16
@@ -257,7 +274,7 @@ for ind_delta = 1:length(delta_list)
 
         T = 20000;
         omega=1;
-        [norm_u_simulations(ind_delta), x, ~, ~,~, ~, local_forcing, y, dt, ~] = compute_norm_u(Re, A, B, T, omega,local_deltaf(ind_delta), local_u_upper_bound(ind_delta),alpha,Beta,Gamma,KBG, KAG,KABG);
+        [norm_u_simulations(ind_delta), x, ~, ~,~, t, local_forcing, y, dt, ~] = compute_norm_u(Re, A, B, T, omega,local_deltaf(ind_delta), local_u_upper_bound(ind_delta),alpha,Beta,Gamma,KBG, KAG,KABG);
         
         %% Theorem 5.1          
         y_norm = sqrt(sum(y.^2,2));
@@ -273,6 +290,7 @@ for ind_delta = 1:length(delta_list)
         
 %         p_list = [1,2,3,4];
         p_list = logspace(log10(1), log10(10000), 16);% specify the norm type, e.g., p=2 for L2 norm
+        %p_list = [1,2,10,20,40,80,100,200,400,800,1000,2000,4000,5000,8000,10000];
        % add for loop to get Lp stable for different p, and then we need get the norm_u_simulation over t and norm_u_theorem over t to show the upper bound
         for ind_p = 1:length(p_list)
             p = p_list(ind_p);
@@ -294,13 +312,14 @@ for ind_delta = 1:length(delta_list)
             end
 
             
+%             upper_bound_y = local_Gamma_theorem(ind_delta)*local_u_upper_bound(ind_delta) +beta_theorem_inf*ones(size(t));
 %             figure;
-            % Plot the norm from simulation
-            %loglog(t, u_square, 'LineWidth', 1.5, 'DisplayName', 'norm usimulation'); hold on;
-%             plot(t, y_norm, 'LineWidth', 1.5, 'DisplayName', 'norm y simulation'); hold on;
+% %             Plot the norm from simulation
+% %             loglog(t, u_square, 'LineWidth', 1.5, 'DisplayName', 'norm usimulation'); hold on;
+%             loglog(t, y_norm, 'LineWidth', 1.5, 'DisplayName', 'norm y simulation'); hold on;
 % 
 %             % Plot the horizontal line for the upper bound
-%             plot(t,local_Gamma_theorem(ind_delta)*local_u_upper_bound(ind_delta) +beta_theorem_inf*ones(size(t)), 'DisplayName', 'upper bound');
+%             loglog(t,upper_bound_y, 'DisplayName', 'upper bound');
 %             %loglog(t, local_u_upper_bound(ind_delta) * ones(size(t)), '--r', 'LineWidth', 1.5, 'DisplayName', 'Upper Bound');
 %             % Plot Lp norms as horizontal lines
 % %             loglog(t, u_tau_Lp(ind_p) * ones(size(t)), '--', 'DisplayName', ['Lp Norm (p=', num2str(p_list(ind_p)), ')']); % Lp_norm equal to zero after p=20, may be is numerical problem
@@ -312,6 +331,7 @@ for ind_delta = 1:length(delta_list)
 %             grid on;
 %             hold off;
 
+ 
         end
 %% figure p vs. beta(Them 5.1 and Cor 5.2)
 
@@ -334,17 +354,21 @@ for ind_delta = 1:length(delta_list)
         % % Adjust font size for the axes
         % set(gca, 'FontSize', 12);
 %%
-        % 
-        % figure;
-        % loglog(p_list, y_tau_Lp, '--r', 'LineWidth',1.5,'DisplayName','LHS of Inequality(p=1-10000 )'); hold on;
-        % loglog(p_list, Gamma_theorem*u_tau_Lp + beta_theorem_p, '-.', 'DisplayName', 'RHS of Inequality(p=1-10000)');
-        % loglog(p_list, y_tau_Linf*ones(size(p_list)),'-r','DisplayName', 'LHS of Inequality (p=inf)');
-        % loglog(p_list, (Gamma_theorem * u_tau_Linf + beta_theorem_inf)*ones(size(p_list)),'-k','DisplayName' ,'RHS of Inequality (p=inf)');
-        % xlabel('p');
-        % title('Gap between LHS and RHS change over p');
-        % legend('show');
-        % grid on;
-        % hold off;
+%         % 
+        colors = lines(16);
+        line_styles = {"-","--","-.",":",""};
+        markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
+        figure;
+        loglog(p_list, local_y_tau_Lp, '--r', 'LineWidth',1.5,'Marker',markers{1},'Color', colors(1, :),'DisplayName','LHS of Inequality (p=1-10^4 )'); hold on;
+        loglog(p_list, local_Gamma_theorem(ind_delta) .*local_u_tau_Lp + local_beta_theorem_p, '-.', 'LineWidth',1.5,'Color', colors(2, :), 'Marker',markers{2},'DisplayName', 'RHS of Inequality (p=1-10^4)');
+        loglog(p_list, y_tau_Linf.*ones(size(p_list)),'-r','Marker',markers{3}, 'LineWidth',1.5,'Color', colors(3, :),'DisplayName', 'LHS of Inequality (p=\infty)');
+        loglog(p_list, (local_Gamma_theorem(ind_delta) .* u_tau_Linf + beta_theorem_inf).*ones(size(p_list)),'-k', 'LineWidth',1.5,'Color', colors(4, :),'Marker',markers{4},'DisplayName' ,'RHS of Inequality (p=\infty)');
+        xlabel('p', 'Interpreter', 'latex');
+%         title('Gap between LHS and RHS change over p');
+        set(gca, 'FontSize', 13);
+        legend('show');
+        grid on;
+        hold off;
 
 
         if norm_u_simulations(ind_delta) <= delta
@@ -503,8 +527,8 @@ ini=randn(9,1);
 u0 = deltaf*ini/norm(ini);
 % u0 =zeros(9,1);
 
-T = 2000;
-tspan = linspace(0, T, 1000);
+T = 70000;
+tspan = linspace(0, T, 10000);
 
 I = eye(size(A));
 C = eye(9);
