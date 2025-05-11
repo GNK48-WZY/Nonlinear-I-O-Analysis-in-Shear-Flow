@@ -1,0 +1,25 @@
+function[lambda, kappa, lambda_af, kappa_ff] = check(A, C, B)
+
+n = [1;0;0;0;0;0;0;0;-1];
+lambda_af=zeros(size(C,1),size(C,1));
+kappa_ff=zeros(size(B,2),size(B,2));
+if ~isempty(n)  %%we have a non-zero null space of nonlinear term.
+    n = double(n);
+    lambda=sdpvar(length(A),1);
+    kappa=sdpvar(length(A),1);
+    %n=double(n);
+    %implementing the inequality constraint like the Lagrange
+    %multiplier
+    for ind_e=1:length(A)
+        e=zeros(length(A),1);
+        e(ind_e)=1;
+        lambda_af=lambda_af+lambda(ind_e,1)*e*n';  % M_i
+        kappa_ff=kappa_ff+kappa(ind_e,1)*(e*n'+n*e'); %T_j
+    end
+else
+    lambda=sdpvar(1,1);
+    lambda_af=zeros(size(A));
+    kappa=sdpvar(1,1);
+    kappa_ff=zeros(size(A));
+end
+end
