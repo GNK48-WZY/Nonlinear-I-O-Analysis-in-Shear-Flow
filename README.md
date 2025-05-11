@@ -1,3 +1,10 @@
 # Nonlinear input output stability analysis in shear flow model
 
-# LMI
+## LMI
+
+## SOS
+
+## Bisection
+
+## Figure Plot
+
