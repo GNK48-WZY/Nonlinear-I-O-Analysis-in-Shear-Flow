@@ -1,1 +1,38 @@
+% Figure 3a:
+line_styles = {"-","--","-.",":",""};
+markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
+T = 70000;
+t = linspace(0, T, 1000000);
+figure;
+loglog(t, Re_200_1e_6, 'LineWidth', 1.5,'LineStyle', line_styles{1}); hold on;
+loglog(t, Re_1000_1e_6, 'LineWidth', 1.5,'LineStyle', line_styles{2});
+loglog(t, Re_1900_1e_6, 'LineWidth', 1.5,'LineStyle', line_styles{3});
+
+% Plot the horizontal line for the upper bound
+loglog(t,Upper_bound_1e_6, 'LineWidth', 1.5, 'DisplayName', 'upper bound','LineStyle', line_styles{4});
+xlabel('$t$', 'Interpreter', 'latex');
+ylabel('$\|\mathbf{y}_{\tau}(t)\|$', 'Interpreter', 'latex');
+set(gca, 'FontSize', 13);
+legend('Re$ = 200$','Re $= 1000$','Re $= 1900$','$\xi$','Interpreter', 'latex');
+grid on;
+hold off;
+
+
+% Figure 3b
+figure;
+loglog(t, Re_200_1e_6, 'LineWidth', 1.5,'LineStyle', line_styles{1},'Color', colors(1, :)); hold on;
+loglog(t, Re_200_1e_4, 'LineWidth', 1.5,'LineStyle', line_styles{2},'Color', colors(2, :));
+loglog(t,Re_200_5e_3, 'LineWidth', 1.5,'LineStyle', line_styles{3},'Color', colors(3, :));
+            
+% Plot the horizontal line for the upper bound            
+loglog(t,Upper_bound_1e_6, 'LineWidth', 1.5,'LineStyle', line_styles{1},'Color', colors(1, :));
+loglog(t,Upper_bound_1e_4, 'LineWidth', 1.5,'LineStyle', line_styles{2},'Color', colors(2, :));            
+loglog(t,Upper_bound_5e_3, 'LineWidth', 1.5,'LineStyle', line_styles{3},'Color', colors(3, :));
+
+xlabel('$t$', 'Interpreter', 'latex');
+ylabel('$\|\mathbf{y}_{\tau}(t)\|$', 'Interpreter', 'latex');
+set(gca, 'FontSize', 13);
+legend('$\delta = 10^{-6}$','$\delta = 10^{-4}$','$\delta = 5 \times 10^{-3}$','Interpreter', 'latex');
+grid on;
+hold off;
 
