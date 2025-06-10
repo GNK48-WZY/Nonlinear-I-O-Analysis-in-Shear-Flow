@@ -6,7 +6,7 @@ addpath(genpath('/home/zhw22003/YALMIP-master'))
 system('export PATH=$PATH:/home/zhw22003/mosek/10.2/tools/platform/linux64x86/bin')
 addpath(genpath('/home/zhw22003/mosek'))
 Re_list = logspace(log10(200), log10(2000), 16);
-delta_list = logspace(-6, 0, 200);
+delta_list = logspace(-6, 0, 400);
 % delta_list = 1e-6;
 % Re_list = logspace(log10(200), log10(2000), 4);
 % delta_list = logspace(-6, 0, 2);
