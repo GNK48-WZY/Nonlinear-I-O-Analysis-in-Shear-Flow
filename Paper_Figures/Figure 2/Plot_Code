@@ -1,3 +1,11 @@
+Gamma_theorem = readtable("Gamma_theorem.csv");
+Gamma_theorem_SOS = readtable("Gamma_theorem_SOS.csv");
+Re_list = readtable("Re_list.csv");
+delta_list = readtable("delta_list.csv");
+u_upper_bound = readtable("u_upper_bound.csv");
+u_upper_bound_SOS = readtable("u_upper_bound_SOS.csv");
+
+
 figure('Position', [100 100 800 600], 'Color', 'w');
 contourf(delta_list, Re_list, log10(u_upper_bound), 20, 'LineStyle', 'none');
 set(gca, 'XScale', 'log', 'YScale', 'log');
