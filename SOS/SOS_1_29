@@ -4,8 +4,13 @@
 %% LMI Model based on the: Liu, C., & Gayme, D. F. (2020). Input-output inspired method for permissible perturbation amplitude of transitional wall-bounded shear flows. Physical Review E, 102(6), 063108.
 %% nine mode model base on: Moehlis, J., Faisst, H., & Eckhardt, B. (2004). A low-dimensional model for turbulent shear flows. New Journal of Physics, 6(1), 56.
 
+% addpath(genpath('/home/zhw22003/YALMIP-master'))
+% addpath(genpath('/home/zhw22003/SeDuMi_1_3'))
+% addpath(genpath('/home/zhw22003/PRE-Model/SOSTOOLS-3.04'))
 Re_list = logspace(log10(200), log10(2000), 16);
-delta_list = logspace(-6, 0, 200);  
+Re_list = 200;
+delta_list = logspace(-6, 0, 100);  
+delta_list = 0.036;
 Lx = 1.75*pi;
 Lz = 1.2*pi;
 alpha = (2*pi)/Lx;
@@ -17,12 +22,16 @@ KABG = sqrt(alpha^2+Beta^2+Gamma^2);
 deltaf = zeros(length(Re_list), length(delta_list));
 delta_max = zeros(1, length(Re_list));
 delta_opt = zeros(length(Re_list), length(delta_list));
+P_value = cell(length(Re_list), length(delta_list));   % For 9x9 matrices
+prog_v = cell(length(Re_list), length(delta_list));    % For structs
+Vpoly = cell(length(Re_list), length(delta_list));     % For polynomials
+Rpoly = cell(length(Re_list), length(delta_list));     % For polynomials
 delete(gcp('nocreate'));
-parpool(8);
+% parpool(16);
 
-parfor ind_Re = 1:length(Re_list)
+for ind_Re = 1:length(Re_list)
     Re = Re_list(ind_Re);
-    [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem] = SOS_Re(Re, Gamma, Beta, alpha, delta_list, KBG, KAG, KABG);
+    [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem, local_P, local_prog, local_Vpoly, local_Rpoly] = SOS_Re(Re, Gamma, Beta, alpha, delta_list, KBG, KAG, KABG);
     delta_opt(ind_Re, :) = local_delta_opt;
     deltaf(ind_Re, :) = local_deltaf;
     delta_max(ind_Re) = max(local_deltaf);
@@ -31,34 +40,43 @@ parfor ind_Re = 1:length(Re_list)
     [Gamma_theorem_max_SOS(ind_Re), ind_Gamma_theorem_max_SOS(ind_Re)]= max(local_Gamma_theorem);
     [Gamma_theorem_min_SOS(ind_Re), ind_Gamma_theorem_min_SOS(ind_Re)]= min(local_Gamma_theorem);
     Gamma_theorem_SOS(ind_Re, :) = local_Gamma_theorem;
+    P_value(ind_Re, :) = local_P;
+    Vpoly(ind_Re, :) = local_Vpoly;
+    Rpoly(ind_Re, :) = local_Rpoly;
+    prog_v(ind_Re, :) = local_prog; 
 end
 
 
-log_Re_list = log10(Re_list);
-log_delta_max = log10(delta_max);
+% save('SOS_5_30.mat', '-v7.3');
 
-% line fitting to the data
-coeffs = polyfit(log_Re_list, log_delta_max, 1);
-sigma = coeffs(1);
-A_log = coeffs(2);
-figure;
-loglog(Re_list, delta_max, 'o'); hold on;
-fit_line = 10.^polyval(coeffs, log_Re_list);
-loglog(Re_list, fit_line, '-');
-xlabel('Re');
-ylabel('\delta_{p}');
-title(['Scaling exponent \sigma = ', num2str(sigma)]);
+% log_Re_list = log10(Re_list);
+% log_delta_max = log10(delta_max);
+% 
+% % line fitting to the data
+% coeffs = polyfit(log_Re_list, log_delta_max, 1);
+% sigma = coeffs(1);
+% A_log = coeffs(2);
+% figure;
+% loglog(Re_list, delta_max, 'o'); hold on;
+% fit_line = 10.^polyval(coeffs, log_Re_list);
+% loglog(Re_list, fit_line, '-');
+% xlabel('Re');
+% ylabel('\delta_{p}');
+% title(['Scaling exponent \sigma = ', num2str(sigma)]);
+% 
+% disp(['Scaling exponent (sigma): ', num2str(sigma)]);
+% disp(['Intercept (A): ', num2str(A_log)]);
 
-disp(['Scaling exponent (sigma): ', num2str(sigma)]);
-disp(['Intercept (A): ', num2str(A_log)]);
 
-
-function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem] = SOS_Re(Re,Gamma, Beta, alpha,delta_list, KBG, KAG, KABG)
+function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem, local_P, local_prog, local_Vpoly, local_Rpoly] = SOS_Re(Re,Gamma, Beta, alpha,delta_list, KBG, KAG, KABG)
    local_delta_opt = NaN*ones(1, length(delta_list));
    local_deltaf = NaN*ones(1, length(delta_list));
    local_u_upper_bound = NaN*ones(1,length(delta_list));
    local_Gamma_theorem = NaN*ones(1,length(delta_list));
-
+   local_P = cell(1, length(delta_list));       % Cell for 9x9 matrices
+   local_prog = cell(1, length(delta_list));    % Cell for structs
+   local_Vpoly = cell(1, length(delta_list));   % Cell for polynomials
+   local_Rpoly = cell(1, length(delta_list));   % Cell for polynomials
    linear = [(Beta^2)/Re;
     ((4*Beta^2)/3 + Gamma^2)/Re;
     (Beta^2+Gamma^2)/Re;
@@ -79,19 +97,12 @@ function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theore
         %a=sdpvar(9,1);
         % a' * P * a;
         nonlinear = nonliner(a, Gamma, Beta, alpha, KBG, KABG, KAG);  
-
-        % Compute the gradient (Jacobian) for each nonlinear term with respect to vector 'a'
-        % Each row corresponds to the gradient of the i-th nonlinear component
+        
         nonlinear_gradient = sym(zeros(length(a), length(a)));
         for i = 1:length(nonlinear)
              nonlinear_gradient(i, :) = gradient(nonlinear(i), a);
         end
-
-        % Define the specific state vector for evaluation (Laminar state)
         a_bar = [1;0;0;0;0;0;0;0;0];
-        
-        % Substitute symbolic variables in the Jacobian with numerical values from a_bar
-        % Convert the result to a double-precision numerical matrix
         nonlinear_gradient_sub = double(subs(nonlinear_gradient, a, a_bar));
         RHS_J_mean_shear = nonlinear_gradient_sub;
         RHS_R_viscous = diag(double(linear));
@@ -115,7 +126,7 @@ function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theore
         SOS_constraint = V_dot + (delta^2 - transpose(x) * x) * transpose(x) * (R_poly) * x + epsilon * transpose(x) * x;
         % Add SOS constraints
         prog = sosineq(prog, -SOS_constraint); % SOS_constraint must be SOS
-        prog = sosineq(prog, V_poly - epsilon * transpose(x) * x); % V(x) - ¦Å*x'*x must be SOS
+        prog = sosineq(prog, V_poly - epsilon * transpose(x) * x); % V(x) - ε*x'*x must be SOS
         prog = sosineq(prog, R_poly); % R(x) must be SOS
         
         solver_opt.solver = 'sedumi';
@@ -127,7 +138,7 @@ function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theore
         
 
         % if sol.problem == 0
-        if prog.solinfo.info.pinf==0 && prog.solinfo.info.dinf==0
+        if prog.solinfo.info.pinf==0 && prog.solinfo.info.dinf==0 && prog.solinfo.info.numerr == 0
             
             %For pvar data structures, hessian cannot work and it needs to
             %use the brute force to compute P matrix
@@ -147,12 +158,18 @@ function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theore
             c3 = epsilon;
             c2 = umax;
             c1 = umin;
+            B = eye(9);
+            C = eye(9);
             L = norm(B);
             c4 = norm(2*P);
             eta_1 = norm(C);
             eta_2 = 0;  
             local_Gamma_theorem(ind_delta) = eta_2 + (eta_1*c2*c4*L)/(c1*c3);        
             local_u_upper_bound(ind_delta) = (c1*c3*delta)/(c2*c4*L);
+            local_P{ind_delta} = P;
+            local_prog{ind_delta} = prog;
+            local_Vpoly{ind_delta} = V_poly;
+            local_Rpoly{ind_delta} = R_poly;
             disp('SOS successful!');
             disp(['Feasible solution found for Re = ', num2str(Re), ', delta = ', num2str(delta_list(ind_delta))]);
         else
@@ -212,3 +229,4 @@ function nonlinear_sdp = nonliner2(x, Gamma, Beta, alpha, KBG, KABG, KAG)
                     term8;
                     term9];
 end
+
