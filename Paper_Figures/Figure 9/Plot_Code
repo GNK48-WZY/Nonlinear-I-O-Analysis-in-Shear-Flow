@@ -2,6 +2,7 @@ colors = lines(16);
 line_styles = {"-","--","-.",":"};
 markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
 line_width = 1.5;
+max_forcing_bi = max(forcing_bi, [],2); 
 
 figure;
 
