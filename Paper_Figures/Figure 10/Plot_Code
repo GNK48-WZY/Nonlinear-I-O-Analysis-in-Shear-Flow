@@ -1,1 +1,37 @@
-
+% Above threshold
+    figure;
+    axes('XScale', 'log', 'YScale', 'log')
+    hold on;
+    for iter = 1:maxIter
+        for sim = 1:num_simulations
+            u = local_u_bisection{iter, sim};
+            if above_threshold(iter)
+            loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2))); % Above threshold in red
+            hold on;
+            end
+        end
+    end
+%     xlim([1, 10000])
+    xlabel('$t$','Interpreter', 'latex');
+    ylabel('$\|\mathbf{y}\|$','Interpreter', 'latex');
+    set(gca, 'FontSize', 14);
+    hold off;
+    
+% Below threshold
+    figure;
+    axes('XScale', 'log', 'YScale', 'log')
+    hold on;
+    for iter = 1:maxIter
+        for sim = 1:num_simulations
+            u = local_u_bisection{iter, sim};
+            if below_threshold(iter)
+            loglog(tspan(late_time_indices), sqrt(sum(u(late_time_indices, :).^2, 2))); % below threshold
+            hold on;
+            end
+        end
+    end
+%     xlim([1, 10000])
+    xlabel('$t$','Interpreter', 'latex');
+    ylabel('$\|\mathbf{y}\|$','Interpreter', 'latex');
+    set(gca, 'FontSize', 14);
+    hold off;
