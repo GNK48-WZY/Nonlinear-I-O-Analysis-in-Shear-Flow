@@ -1,5 +1,5 @@
 figure('Position', [100 100 800 600], 'Color', 'w');
-contourf(delta_list, Re_list, log10(u_upper_bound_e_6), 20, 'LineStyle', 'none');
+contourf(delta_list, Re_list, log10(u_upper_bound_e_4), 20, 'LineStyle', 'none');
 set(gca, 'XScale', 'log', 'YScale', 'log');
 colormap(parula);
 cbar = colorbar;
@@ -17,7 +17,7 @@ caxis([-20, -11]);
 
 
 figure('Position', [100 100 800 600], 'Color', 'w');
-contourf(delta_list, Re_list, log10(Gamma_theorem_e_6), 20, 'LineStyle', 'none');
+contourf(delta_list, Re_list, log10(Gamma_theorem_e_4), 20, 'LineStyle', 'none');
 set(gca, 'XScale', 'log', 'YScale', 'log');
 colormap(parula);
 cbar = colorbar;
