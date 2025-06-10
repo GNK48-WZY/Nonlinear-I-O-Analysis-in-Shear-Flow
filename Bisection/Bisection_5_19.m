@@ -1,3 +1,7 @@
+%% Bisection method to get the upper bound of forcing
+%% Date: 2025/5/8
+%% Outputs: forcing_bi
+
 addpath(genpath('/home/zhw22003/YALMIP-master'))
 system('export PATH=$PATH:/home/zhw22003/mosek/10.2/tools/platform/linux64x86/bin')
 addpath(genpath('/home/zhw22003/mosek'))
