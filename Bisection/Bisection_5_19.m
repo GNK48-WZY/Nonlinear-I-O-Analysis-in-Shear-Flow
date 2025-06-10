@@ -45,7 +45,7 @@ parfor ind_Re = 1:length(Re_list)
    
 end
 
-save Bisection_5_19_epsilon_1e_8.mat
+% save Bisection_5_19_epsilon_1e_8.mat
 
 function [local_forcing_amp]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear, u,B,C, alpha,Beta,Gamma,KBG, KAG,KABG)
     local_forcing_amp = NaN*ones(1, length(delta_list)); % 1 x length(delta_list)
