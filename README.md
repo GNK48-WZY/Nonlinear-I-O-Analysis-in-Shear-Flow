@@ -1,5 +1,5 @@
 # Nonlinear input-output analysis of transitional shear flows using small-signal finite-gain Lp stability
-arXiv link:  
+arXiv link:  https://doi.org/10.48550/arXiv.2506.08129
 ## LMI
  This part includes the code for linear matrix inequality to search for the lyapunov functino to do the stability analysis as shown in Theorem 2 of our paper.
 ## SOS
