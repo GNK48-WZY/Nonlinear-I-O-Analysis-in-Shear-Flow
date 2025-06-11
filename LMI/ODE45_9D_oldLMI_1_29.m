@@ -32,11 +32,6 @@ B = eye(9);
 C = eye(9);
 D = zeros(9,9);
 n = [1;0;0;0;0;0;0;0;-1];
-%     gamma_results = zeros(length(Re_list), length(delta_list));
-%     test_u_delta = zeros(length(Re_list), length(delta_list));
-%     test_u_d_gamma = zeros(length(Re_list), length(delta_list));
-%     reachable_delta = zeros(length(Re_list), length(delta_list));
-%     lambda_min_results = zeros(length(Re_list), length(delta_list));
 Lx = 1.75*pi;
 Lz = 1.2*pi;
 alpha = (2*pi)/Lx;
@@ -67,26 +62,9 @@ ind_Gamma_theorem_min = zeros(1,length(Re_list));
 delete(gcp('nocreate'));
 % parpool(4);
 
-%% Theorem 5.1
-% parfor ind_Re = 1:16
-%     Re = Re_list(ind_Re);
-%     [local_deltaf, local_u_upper_bound, local_test_u_delta, local_prop_y_u, local_u_tau_Lp, local_y_tau_Lp, local_forcing, local_forcing_amp]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear,u,B,C);
-%     deltaf{ind_Re} = local_deltaf;
-%     [delta_max{ind_Re},ind_delta_max{ind_Re}] = max(local_deltaf);
-%     u_upper_bound{ind_Re} = local_u_upper_bound;
-%     [u_upper_bound_max{ind_Re},ind_u_upper_bound_max{ind_Re}] = max(local_u_upper_bound);
-%     test_u_delta{ind_Re} = local_test_u_delta;
-%     prop_y_u{ind_Re} = local_prop_y_u;
-%     u_tau_Lp{ind_Re} = local_u_tau_Lp;
-%     y_tau_Lp{ind_Re} = local_y_tau_Lp;
-%     forcing_LMI{ind_Re} = local_forcing;
-%     forcing_bi{ind_Re} = local_forcing_amp;
-% end
-
 for ind_Re = 1:length(Re_list)
     Re = Re_list(ind_Re);
     [local_deltaf, local_u_upper_bound, local_test_u_delta, local_prop_y_u, local_u_tau_Lp, local_y_tau_Lp, local_forcing, local_beta_theorem_p, local_Gamma_theorem, local_gamma_cor, local_L2_gain]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear,u,B,C, alpha,Beta,Gamma,KBG, KAG,KABG);
-%     LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear,u,B,C);
     deltaf(ind_Re, :) = local_deltaf;
     [delta_max(ind_Re),ind_delta_max(ind_Re)] = max(local_deltaf);
     u_upper_bound(ind_Re, :) = local_u_upper_bound;
@@ -95,57 +73,13 @@ for ind_Re = 1:length(Re_list)
     prop_y_u(ind_Re,:) = local_prop_y_u;
     u_tau_Lp(ind_Re,:) = local_u_tau_Lp;
     y_tau_Lp(ind_Re,:) = local_y_tau_Lp;
-%     forcing_LMI{ind_Re} = local_forcing;
-    % forcing_bi(ind_Re,:) = local_forcing_amp;
     beta_theorem_p(ind_Re,:) = local_beta_theorem_p;
     Gamma_theorem(ind_Re,:)= local_Gamma_theorem;
-    % non_nan_mask = ~isnan(local_Gamma_theorem);
-    % non_nan_indices = find(non_nan_mask);
-    % 
-    % if ~isempty(non_nan_indices)
-    %     % Get the last non-NaN index and value
-    %     ind_last_non_nan = non_nan_indices(end);
-    %     last_non_nan_Gamma = local_Gamma_theorem(ind_last_non_nan);
-    % else
-    %     % If all values are NaN, assign NaN
-    %     ind_last_non_nan = NaN;
-    %     last_non_nan_Gamma = NaN;
-    % end
-    % 
-    % % Store results
-    % Gamma_theorem_last(ind_Re) = last_non_nan_Gamma;
-    % ind_Gamma_theorem_last(ind_Re) = ind_last_non_nan;
     [Gamma_theorem_max(ind_Re), ind_Gamma_theorem_max(ind_Re)]= max(local_Gamma_theorem);
     [Gamma_theorem_min(ind_Re), ind_Gamma_theorem_min(ind_Re)]= min(local_Gamma_theorem);
     gamma_cor(ind_Re,:) = local_gamma_cor; 
     L2_gain(ind_Re,:) = local_L2_gain;
 end
-
-
-%     if any(delta_max == 0)
-%         ind_Re = find(delta_max);
-%     end
-
-% log_Re_list = log10(Re_list);
-% log_delta_max = log10(delta_max);
-% 
-% % line fitting to the data
-% coeffs = polyfit(log_Re_list, log_delta_max, 1);
-% sigma = coeffs(1);
-% A_log = coeffs(2);
-save ODE45_9D_oldLMI_function_NEW_51_2_5_test.mat
-% figure;
-% loglog(Re_list, delta_max, 'o'); hold on;
-% fit_line = 10.^polyval(coeffs, log_Re_list);
-% loglog(Re_list, fit_line, '-');
-% xlabel('Re');
-% ylabel('\delta_{p}');
-% title(['Scaling exponent \sigma = ', num2str(sigma)]);
-% 
-% disp(['Scaling exponent (sigma): ', num2str(sigma)]);
-% disp(['Intercept (A): ', num2str(A_log)]);
-% saveas(gcf,'figure.fig');
-
 
 function [local_deltaf, local_u_upper_bound, local_test_u_delta, local_prop_y_u, local_u_tau_Lp, local_y_tau_Lp, local_forcing, local_beta_theorem_p, local_Gamma_theorem, local_gamma_cor, local_L2_gain]=LMI_Re(Re,delta_list,RHS_J_mean_shear, nonlinear, u,B,C, alpha, Beta, Gamma,KBG, KAG,KABG)
     local_u_upper_bound = NaN*ones(1, length(delta_list));
@@ -167,14 +101,9 @@ function [local_deltaf, local_u_upper_bound, local_test_u_delta, local_prop_y_u,
    %% Theorem 5.4
     D = zeros(9,9);
     I = eye(size(A));
-%     s = tf('s'); % Laplace variable
-%     G = C * inv(s * I - A) * B + D;   
-%     % Compute the L2 gain (H-infinity norm)
-%     local_L2_gain = norm(G, Inf);
     sys = ss(A, B, C, D); 
     local_L2_gain = hinfnorm(sys);
 
-    % Display the result
     disp(['The L2 gain of the system is: ', num2str(local_L2_gain)]);
 
 
@@ -182,40 +111,9 @@ for ind_delta = 1:length(delta_list)
     yalmip('clear');
     delta = delta_list(ind_delta);
     delta2 = delta^2;
-
-    %             if ~isempty(n)  %we have a non-zero null space of nonlinear term.
-    %                 n = double(n);
-    %                 lambda=sdpvar(length(A),1);
-    %                 kappa=sdpvar(length(A),1);
-    %                 %n=double(n);
-    %                 %implementing the inequality constraint like the Lagrange
-    %                 %multiplier
-    %                 for ind_e=1:length(A)
-    %                       e=zeros(length(A),1);
-    %                       e(ind_e)=1;
-    %                       lambda_af=lambda_af+lambda(ind_e,1)*e*n';
-    %                       kappa_ff=kappa_ff+kappa(ind_e,1)*(e*n'+n*e');
-    %                 end
-    %             else
-    %                 lambda=sdpvar(1,1);
-    %                 lambda_af=zeros(size(A));
-    %                 kappa=sdpvar(1,1);
-    %                 kappa_ff=zeros(size(A));
-    %             end
     [~, ~, lambda_af, kappa_ff] = check(A, C, B);
     [F_square] = F__square(nonlinear, u);
 
-    %             s = sdpvar(length(F_square), 1);
-    %             s_bound = zeros(size(A));
-    %             for m_ind = 1:length(F_square)
-    %                  s_bound = s_bound + s(m_ind) * delta2 * double(F_square{m_ind});
-    %             end
-    %
-    %             if length(s) <= length(A)
-    %                 diag_s = diag(s);
-    %             else
-    %                 diag_s = diag(s(1:length(A))) + eye(size(A)) * s(length(A) + 1);
-    %             end
     [s, diag_s, s_bound] = s_diag_s(F_square, A, delta2);
     %% Corollary 5.2
     % Initialize variables and parameters
@@ -307,7 +205,6 @@ for ind_delta = 1:length(delta_list)
                 fprintf('The inequality does NOT hold.\n');
         end
         
-%         p_list = [1,2,3,4];
         p_list = logspace(log10(1), log10(10000), 16);% specify the norm type, e.g., p=2 for L2 norm
         %p_list = [1,2,10,20,40,80,100,200,400,800,1000,2000,4000,5000,8000,10000];
        % add for loop to get Lp stable for different p, and then we need get the norm_u_simulation over t and norm_u_theorem over t to show the upper bound
@@ -329,65 +226,8 @@ for ind_delta = 1:length(delta_list)
             else
                 fprintf('The inequality does NOT hold.\n');
             end
-
-       %% norm_analysis plot 
-%              upper_bound_y = local_Gamma_theorem(ind_delta)*local_u_upper_bound(ind_delta) +beta_theorem_inf*ones(size(t));
-%             figure;
-% %             Plot the norm from simulation
-% %             loglog(t, u_square, 'LineWidth', 1.5, 'DisplayName', 'norm usimulation'); hold on;
-%             loglog(t, y_norm, 'LineWidth', 1.5, 'DisplayName', 'norm y simulation'); hold on;
-% 
-%             % Plot the horizontal line for the upper bound
-%             loglog(t,upper_bound_y, 'DisplayName', 'upper bound');
-%             %loglog(t, local_u_upper_bound(ind_delta) * ones(size(t)), '--r', 'LineWidth', 1.5, 'DisplayName', 'Upper Bound');
-%             % Plot Lp norms as horizontal lines
-% %             loglog(t, u_tau_Lp(ind_p) * ones(size(t)), '--', 'DisplayName', ['Lp Norm (p=', num2str(p_list(ind_p)), ')']); % Lp_norm equal to zero after p=20, may be is numerical problem
-% %             loglog(t, u_tau_Linf * ones(size(t)), '-.', 'DisplayName', 'L∞ Norm'); % Plot Linf norm
-%             xlabel('Time (t)');
-%             ylabel('Norm Values');
-%             title(['Norm Analysis for \delta = ', num2str(delta_list(ind_delta))]);
-%             legend('show');
-%             grid on;
-%             hold off;
-
  
         end
-%% figure p vs. beta(Them 5.1 and Cor 5.2)
-        % figure;
-        % loglog(p_list, local_beta_theorem_p, '-o', 'LineWidth', 1.5); % First line
-        % hold on;
-        % loglog(p_values, beta_cor_p_values, '-o', 'LineWidth', 1.5); % Second line
-        % hold off;
-        % 
-        % % Add title and labels
-        % title('Effect of p on Beta', 'FontSize', 14);
-        % xlabel('p', 'FontSize', 12);
-        % ylabel('\beta (Beta)', 'FontSize', 12);
-        % 
-        % % Customize grid, ticks, and legend
-        % grid on;
-        % xticks(p_values);
-        % legend('\beta_{theorem} vs. p', '\beta_{cor} vs. p', 'FontSize', 10, 'Location', 'best');
-        % 
-        % % Adjust font size for the axes
-        % set(gca, 'FontSize', 12);
-%% The gap between LHS and RHS over p
-%         % 
-%         colors = lines(16);
-%         line_styles = {"-","--","-.",":",""};
-%         markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
-%         figure;
-%         loglog(p_list, local_y_tau_Lp, '--r', 'LineWidth',1.5,'Marker',markers{1},'Color', colors(1, :),'DisplayName','LHS of Inequality (p=1-10^4)'); hold on;
-%         loglog(p_list, local_Gamma_theorem(ind_delta) .*local_u_tau_Lp + local_beta_theorem_p, '-.', 'LineWidth',1.5,'Color', colors(2, :), 'Marker',markers{2},'DisplayName', 'RHS of Inequality (p=1-10^4)');
-%         loglog(p_list, y_tau_Linf.*ones(size(p_list)),'-r','Marker',markers{3}, 'LineWidth',1.5,'Color', colors(3, :),'DisplayName', 'LHS of Inequality (p=\infty)');
-%         loglog(p_list, (local_Gamma_theorem(ind_delta) .* u_tau_Linf + beta_theorem_inf).*ones(size(p_list)),'-k', 'LineWidth',1.5,'Color', colors(4, :),'Marker',markers{4},'DisplayName' ,'RHS of Inequality (p=\infty)');
-%         xlabel('p', 'Interpreter', 'latex');
-% %         title('Gap between LHS and RHS change over p');
-%         set(gca, 'FontSize', 13);
-%         legend('show');
-%         grid on;
-%         hold off;
-
 
         if norm_u_simulations(ind_delta) <= delta
             local_test_u_delta(ind_delta) = 1;
@@ -523,19 +363,6 @@ else
 end
 end
 
-%% forcing
-%function d_forcing_func = generate_d_forcing(delta, T, omega)
-%phi = rand(1,1)*2*pi;
-% force=randn(9,1);
-% d_forcing_func = @(t) (delta)*force/norm(force);
-%[sin(omega*t)*cos(phi);sin(omega*t)*sin(phi);sin(omega*t)*cos(phi); sin(omega*t)*sin(phi);sin(omega*t)*cos(phi); sin(omega*t)*sin(phi); sin(omega*t)*cos(phi); sin(omega*t)*sin(phi);sin(omega*t)*cos(phi)];
-%end
-% 
-% function forcing =d_forcing_random(t,u_upper_bound)
-% force=randn(9,1);
-% forcing=u_upper_bound*force/norm(force);
-% end
-
 
 %% Norm_u computation
 function [norm_u, u, G, sys, max_SVD, t, local_forcing, y, dt, a_square] = compute_norm_u(Re, A, B, T, omega, deltaf, u_upper_bound, alpha,Beta,Gamma,KBG, KAG,KABG)
@@ -555,52 +382,19 @@ D = zeros(9, 9);
 G = C * inv(1i * omega * I - A) * B;
 max_SVD = max(svd(G));
 sys = ss(A, B, C, D);
-% u0 = zeros(9,1);
-% tol = 1e-9;  % Tolerance for convergence
-% max_iter = 1000;  % Maximum fixed-point iterations per step
 
-% dt = diff(tspan);
-% dt = dt(1);
-%[t, u, forcing] = ode45(@(t,u)  ode_system_123(t, u, A, B, u_upper_bound), tspan, u0);
 [t, u, local_forcing] = rk5_solver(@(t,u)  ode_system_123(t, u, A, B, u_upper_bound, alpha,Beta,Gamma,KBG, KAG,KABG), tspan, u0);
 
-% Linear Equation analytical solution
-% for t_ind = 1:length(tspan)
-%     syms t_sym real; % Create a symbolic variable for time
-%     u_sym = expm(A *tspan(t_ind)) * u0; % Analytical solution: u(t)=exp(At)*u0
-%     u_analytical(:,t_ind) = double(u_sym); % Store symbolic expression
-% end 
+
 
 %old norm integrate over time
 dt=diff(tspan);
 dt=dt(1);
-% u_square=sum(u.^2,2);
-% norm_u=sqrt(sum(u_square(2:end).*dt)/max(tspan));
 
-%1 norm maximal over time
 a_square=sqrt(sum(u.^2,2));
-%norm_u = sqrt(sum(u_square.^2)*dt);
 y =C*u';
 y = y'; % output
 norm_u=max(a_square);
-% 
-% 
-% % %Bisection
-% max_u = 0.01; 
-% min_u = 0;  
-% % Tolerance and maximum iterations
-% tol = 1e-14;
-% maxIter = 100;
-% 
-% % Call the bisection method
-% % u0=zeros(9,1);
-% % [forcing_amp, iterations] = bisectionMethod(min_u, max_u, tol, maxIter, A, B,tspan, u0);
-% num_simulations = 20;  % Number of simulations per step
-% [forcing_amp, iterations] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations);
-% % Display results
-% fprintf('Approximated root: %.20f\n', forcing_amp);
-% fprintf('Number of iterations: %d\n', iterations);
-% % 
 
 end
 
@@ -691,114 +485,3 @@ function [t, x, forcing] = rk5_solver(ode_func, tspan, u0)
     
     t = tspan; % Output time vector
 end
-
-
-% % Runge-Kutta method
-% function [t, x, forcing] = rk4_solver(ode_func, tspan, u0)
-%     % Number of time steps
-%     N = length(tspan);
-%     % Preallocate u matrix (number of time steps by 9 states)
-%     x = zeros(N, length(u0));
-%     x(1, :) = u0;  % Set initial condition
-%     forcing = zeros(N, length(u0));
-%     % Time stepping
-%     for i = 1:N-1
-%         h = tspan(i+1) - tspan(i);  % Calculate step size
-%         % Perform one RK4 step and store result in the next row
-%         [x(i+1, :),forcing(i+1,:)] = rk4_step(x(i, :), h, ode_func);
-% 
-%     end
-% 
-%     t = tspan;  % Output the time vector
-% end
-% 
-% function [u_next, forcing] = rk4_step(u_current, h, ode_func)
-%     % Calculate the RK4 coefficients
-%     k1 = h * ode_func(0, u_current')';
-%     k2 = h * ode_func(0, (u_current' + 0.5 * k1'))';
-%     k3 = h * ode_func(0, (u_current' + 0.5 * k2'))';
-%     k4 = h * ode_func(0, (u_current' + k3'))';
-%     [~,forcing] = ode_func(0, u_current');
-%     forcing = forcing';
-%     % Update the state using RK4 formula
-%     u_next = u_current + (k1 + 2*k2 + 2*k3 + k4) / 6;
-% end
-
-% 
-% % Bisection Method
-% function [forcing_amp, iterations] = bisectionMethod(min_u, max_u, tol, maxIter, A, B,tspan, u0)
-%     % Bisection Method to find the root of a function
-%     % f: function handle
-%     % a, b: interval [a, b] where f(a) * f(b) < 0
-%     % tol: tolerance for convergence
-%     % maxIter: maximum number of iterations
-%     % Returns:
-%     %   root: the approximated root
-%     %   iterations: number of iterations performed
-% 
-%     % Initialize variables
-%     iterations = 0;
-%     forcing_amp = (max_u + min_u) / 2; % Midpoint
-% 
-%     % Start iteration loop
-%     while (max_u - min_u) / 2 > tol && iterations < maxIter
-%         iterations = iterations + 1;
-% 
-%         % Update the midpoint
-%         forcing_amp = (max_u + min_u) / 2;
-%         [t, u, forcing] = rk5_solver(@(t,u)  ode_system_123(t, u, A, B, forcing_amp), tspan, u0);
-%         u_square=sqrt(sum(u.^2,2));
-%         max_u_square = max(u_square(end-10:end));
-% 
-% 
-%         % Update the interval
-%         if max_u_square < 10.^-8
-%             min_u = forcing_amp; % Root is in [a, root]
-%         else
-%             max_u = forcing_amp; % Root is in [root, b]
-%         end
-%     end
-% 
-%     % Final check for convergence
-%     if (max_u - min_u) > tol
-%         warning('Bisection method did not converge within the maximum iterations.');
-%     end
-% end
-% 
-% 
-% function [forcing_amp, iterations] = bisectionMethodMulti(min_u, max_u, tol, maxIter, A, B, tspan, u0, num_simulations)
-%     % Modified Bisection Method with multiple simulations per step
-%     for iter = 1:maxIter
-%         mid_u = (min_u + max_u) / 2;
-%         norm_values = zeros(num_simulations, 1);
-% 
-%         % Run multiple simulations
-%         for sim = 1:num_simulations
-%             ini = randn(9, 1);
-%             u0_sim = mid_u * ini / norm(ini);
-%             [~, u, ~] = rk5_solver(@(t, u) ode_system_123(t, u, A, B, mid_u), tspan, u0_sim);
-%             norm_values(sim) = max(sqrt(sum(u.^2, 2)));  % Max norm
-%         end
-% 
-%         % Evaluate average norm
-%         avg_norm = mean(norm_values);
-% 
-%         % Update bounds
-%         if avg_norm > 1
-%             max_u = mid_u;
-%         else
-%             min_u = mid_u;
-%         end
-% 
-%         % Check convergence
-%         if abs(max_u - min_u) < tol
-%             forcing_amp = mid_u;
-%             iterations = iter;
-%             return;
-%         end
-%     end
-% 
-%     % If max iterations reached
-%     forcing_amp = (min_u + max_u) / 2;
-%     iterations = maxIter;
-% end
