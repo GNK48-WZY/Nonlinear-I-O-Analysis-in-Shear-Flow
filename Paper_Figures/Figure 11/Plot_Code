@@ -21,6 +21,8 @@ grid on;
 set(gca, 'FontSize', 18, 'LineWidth', 1.2,'ColorScale','log');
 caxis([9, 16]);
 
+disp('Figure 11a');
+
 figure('Position', [100 100 800 600], 'Color', 'w');
 contourf(delta_list, Re_list, log10(u_upper_bound_e_3), 20, 'LineStyle', 'none');
 set(gca, 'XScale', 'log', 'YScale', 'log');
@@ -37,3 +39,5 @@ set(gca, 'XTick', 10.^(-6:2:0), 'YTick', y);
 grid on;
 set(gca, 'FontSize', 18, 'LineWidth', 1.2,'ColorScale','log');
 caxis([-20, -11]);
+
+disp('Figure 11b');
