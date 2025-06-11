@@ -1,4 +1,8 @@
-
+Re_list = logspace(log10(200), log10(2000), 16);  
+L2_gain = readtable("L2_gain.csv");
+gamma_cor = readtable("gamma_cor.csv");
+Gamma_theorem_max_SOS = readtable("Gamma_theorem_max_SOS.csv");
+Gamma_theorem_max = readtable("Gamma_theorem_max.csv");
 
 colors = lines(16);
 line_styles = ["-","--","-.",":"];
