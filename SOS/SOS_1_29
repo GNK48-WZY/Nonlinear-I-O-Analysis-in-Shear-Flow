@@ -4,13 +4,11 @@
 %% LMI Model based on the: Liu, C., & Gayme, D. F. (2020). Input-output inspired method for permissible perturbation amplitude of transitional wall-bounded shear flows. Physical Review E, 102(6), 063108.
 %% nine mode model base on: Moehlis, J., Faisst, H., & Eckhardt, B. (2004). A low-dimensional model for turbulent shear flows. New Journal of Physics, 6(1), 56.
 
-% addpath(genpath('/home/zhw22003/YALMIP-master'))
-% addpath(genpath('/home/zhw22003/SeDuMi_1_3'))
-% addpath(genpath('/home/zhw22003/PRE-Model/SOSTOOLS-3.04'))
+addpath(genpath('/home/zhw22003/YALMIP-master'))
+addpath(genpath('/home/zhw22003/SeDuMi_1_3'))
+addpath(genpath('/home/zhw22003/PRE-Model/SOSTOOLS-3.04'))
 Re_list = logspace(log10(200), log10(2000), 16);
-Re_list = 200;
-delta_list = logspace(-6, 0, 100);  
-delta_list = 0.036;
+delta_list = logspace(-6, 0, 400);  
 Lx = 1.75*pi;
 Lz = 1.2*pi;
 alpha = (2*pi)/Lx;
@@ -27,9 +25,9 @@ prog_v = cell(length(Re_list), length(delta_list));    % For structs
 Vpoly = cell(length(Re_list), length(delta_list));     % For polynomials
 Rpoly = cell(length(Re_list), length(delta_list));     % For polynomials
 delete(gcp('nocreate'));
-% parpool(16);
+parpool(16);
 
-for ind_Re = 1:length(Re_list)
+parfor ind_Re = 1:length(Re_list)
     Re = Re_list(ind_Re);
     [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem, local_P, local_prog, local_Vpoly, local_Rpoly] = SOS_Re(Re, Gamma, Beta, alpha, delta_list, KBG, KAG, KABG);
     delta_opt(ind_Re, :) = local_delta_opt;
@@ -45,27 +43,6 @@ for ind_Re = 1:length(Re_list)
     Rpoly(ind_Re, :) = local_Rpoly;
     prog_v(ind_Re, :) = local_prog; 
 end
-
-
-% save('SOS_5_30.mat', '-v7.3');
-
-% log_Re_list = log10(Re_list);
-% log_delta_max = log10(delta_max);
-% 
-% % line fitting to the data
-% coeffs = polyfit(log_Re_list, log_delta_max, 1);
-% sigma = coeffs(1);
-% A_log = coeffs(2);
-% figure;
-% loglog(Re_list, delta_max, 'o'); hold on;
-% fit_line = 10.^polyval(coeffs, log_Re_list);
-% loglog(Re_list, fit_line, '-');
-% xlabel('Re');
-% ylabel('\delta_{p}');
-% title(['Scaling exponent \sigma = ', num2str(sigma)]);
-% 
-% disp(['Scaling exponent (sigma): ', num2str(sigma)]);
-% disp(['Intercept (A): ', num2str(A_log)]);
 
 
 function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theorem, local_P, local_prog, local_Vpoly, local_Rpoly] = SOS_Re(Re,Gamma, Beta, alpha,delta_list, KBG, KAG, KABG)
@@ -90,12 +67,8 @@ function [local_deltaf, local_delta_opt, local_u_upper_bound, local_Gamma_theore
 
    for ind_delta = 1:length(delta_list)
         delta = delta_list(ind_delta);
-        %P = sdpvar(9,9);
-        %R = sdpvar(9,9);
         a = sym('a', [9, 1]);
         epsilon = 0.01;
-        %a=sdpvar(9,1);
-        % a' * P * a;
         nonlinear = nonliner(a, Gamma, Beta, alpha, KBG, KABG, KAG);  
         
         nonlinear_gradient = sym(zeros(length(a), length(a)));
