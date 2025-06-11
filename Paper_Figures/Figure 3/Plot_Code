@@ -30,6 +30,7 @@ legend('Re$ = 200$','Re $= 1000$','Re $= 1900$','$\xi$','Interpreter', 'latex');
 grid on;
 hold off;
 
+disp('Figure 3a');
 
 % Figure 3b
 figure;
@@ -49,3 +50,4 @@ legend('$\delta = 10^{-6}$','$\delta = 10^{-4}$','$\delta = 5 \times 10^{-3}$','
 grid on;
 hold off;
 
+disp('Figure 3b');
