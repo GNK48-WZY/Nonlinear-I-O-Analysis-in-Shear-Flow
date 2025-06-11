@@ -23,6 +23,7 @@ grid on;
 set(gca, 'FontSize', 18, 'LineWidth', 1.2,'ColorScale','log');
 caxis([-20, -11]);
 
+disp('Figure 2a');
 
 figure('Position', [100 100 800 600], 'Color', 'w');
 contourf(delta_list, Re_list, log10(Gamma_theorem), 20, 'LineStyle', 'none');
