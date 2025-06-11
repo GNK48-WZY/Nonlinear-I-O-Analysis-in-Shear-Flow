@@ -1,8 +1,7 @@
-Re_list = readtable("Re_list.csv")
-delta_list = readtable("delta_list.dat")
-Gamma_theorem_e_6 = readtable("Gamma_theorem_e_6.csv")
-u_upper_bound_e_6 = readtable("u_upper_bound_e_6.csv")
-
+Re_list = readtable("Re_list.csv");
+delta_list = readtable("delta_list.dat");
+Gamma_theorem_e_6 = readtable("Gamma_theorem_e_6.csv");
+u_upper_bound_e_6 = readtable("u_upper_bound_e_6.csv");
 
 figure('Position', [100 100 800 600], 'Color', 'w');
 contourf(delta_list, Re_list, log10(Gamma_theorem_e_6), 20, 'LineStyle', 'none');
