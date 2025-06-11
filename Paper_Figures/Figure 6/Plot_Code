@@ -1,3 +1,10 @@
+Re_list = readtable("Re_list.csv");
+Gamma_theorem_max = readtable("Gamma_theorem_max.csv");
+beta_theorem_p = readtable("beta_theorem_p.csv");
+prop_y_u = readtable("prop_y_u.csv");
+u_tau_Lp = readtable("u_tau_Lp.csv");
+y_tau_Lp = readtable("y_tau_Lp.csv");
+
 % Figure 6a-c
 
 colors = lines(16);
@@ -58,9 +65,10 @@ legend([h1, h3], {...
 grid on;
 set(gca, 'FontSize', 14);
 
+disp('Figure 6a-c');
+
 
 % Figure 6d
-
 colors = lines(16);
 line_styles = {"-","--","-.",":",""};
 markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
@@ -85,3 +93,4 @@ grid on;
 set(gca, 'FontSize', 14);
 hold off;
 
+disp('Figure 6d');
