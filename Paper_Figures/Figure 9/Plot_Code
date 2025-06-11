@@ -1,3 +1,8 @@
+Re_list = logspace(log10(200), log10(2000), 16);  
+forcing_bi = readtable("forcing_bi.csv");
+u_upper_bound_max = readtable("u_upper_bound_max.csv");
+u_upper_bound_max_SOS = readtable("u_upper_bound_max_SOS.csv");
+
 colors = lines(16);
 line_styles = {"-","--","-.",":"};
 markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
