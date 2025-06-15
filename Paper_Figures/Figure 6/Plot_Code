@@ -1,9 +1,9 @@
-Re_list = readtable("Re_list.csv");
-Gamma_theorem_max = readtable("Gamma_theorem_max.csv");
-beta_theorem_p = readtable("beta_theorem_p.csv");
-prop_y_u = readtable("prop_y_u.csv");
-u_tau_Lp = readtable("u_tau_Lp.csv");
-y_tau_Lp = readtable("y_tau_Lp.csv");
+Re_list = readmatrix("Re_list.csv");
+Gamma_theorem_max = readmatrix("Gamma_theorem_max.csv");
+beta_theorem_p = readmatrix("beta_theorem_p.csv");
+prop_y_u = readmatrix("prop_y_u.csv");
+u_tau_Lp = readmatrix("u_tau_Lp.csv");
+y_tau_Lp = readmatrix("y_tau_Lp.csv");
 
 % Figure 6a-c
 
