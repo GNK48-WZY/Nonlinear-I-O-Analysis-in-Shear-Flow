@@ -1,8 +1,8 @@
 Re_list = logspace(log10(200), log10(2000), 16);  
 L2_gain = readmatrix("L2_gain.csv");
 gamma_cor = readmatrix("gamma_cor.csv");
-Gamma_theorem_max_SOS = readmatrix("Gamma_theorem_max_SOS.xlsx");
-Gamma_theorem_max = readmatrix("Gamma_theorem_max.xlsx");
+Gamma_theorem_max_SOS = readmatrix("Gamma_theorem_max_SOS.csv");
+Gamma_theorem_max = readmatrix("Gamma_theorem_max.csv");
 
 colors = lines(16);
 line_styles = ["-","--","-.",":"];
