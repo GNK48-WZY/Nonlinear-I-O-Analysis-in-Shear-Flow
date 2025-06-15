@@ -1,11 +1,11 @@
-Upper_bound_1e_6 = readtable("Upper_bound_1e_6.csv");
-no_forcing_Re_1000_1e_6 = readtable("no_forcing_Re_1000_1e_6.csv");
-no_forcing_Re_1900_1e_6 = readtable("no_forcing_Re_1900_1e_6.csv");
-no_forcing_Re_200_1e_6 = readtable("no_forcing_Re_200_1e_6.csv");
-no_initial_Re_200_1e_6 = readtable("no_initial_Re_200_1e_6.csv");
-no_initial_Re_1000_1e_6 = readtable("no_initial_Re_1000_1e_6.csv");
-no_initial_Re_1900_1e_6 = readtable("no_initial_Re_1900_1e_6.csv");
-t = readtable("t.csv");
+Upper_bound_1e_6 = readmatrix("Upper_bound_1e_6.csv");
+no_forcing_Re_1000_1e_6 = readmatrix("no_forcing_Re_1000_1e_6.csv");
+no_forcing_Re_1900_1e_6 = readmatrix("no_forcing_Re_1900_1e_6.csv");
+no_forcing_Re_200_1e_6 = readmatrix("no_forcing_Re_200_1e_6.csv");
+no_initial_Re_200_1e_6 = readmatrix("no_initial_Re_200_1e_6.csv");
+no_initial_Re_1000_1e_6 = readmatrix("no_initial_Re_1000_1e_6.csv");
+no_initial_Re_1900_1e_6 = readmatrix("no_initial_Re_1900_1e_6.csv");
+t = readmatrix("t.csv");
 
 
 
