@@ -1,11 +1,11 @@
-beta_theorem_inf = readtable("beta_theorem_inf.csv");
-local_Gamma_theorem = readtable("local_Gamma_theorem.csv");
-local_beta_theorem_p = readtable("local_beta_theorem_p.csv");
-local_u_tau_Lp = readtable("local_u_tau_Lp.csv");
-local_y_tau_Lp = readtable("local_y_tau_Lp.csv");
-p_list = readtable("p_list.csv");
-u_tau_Linf = readtable("u_tau_Linf.csv");
-y_tau_Linf = readtable("y_tau_Linf.csv");
+beta_theorem_inf = readmatrix("beta_theorem_inf.csv");
+local_Gamma_theorem = readmatrix("local_Gamma_theorem.csv");
+local_beta_theorem_p = readmatrix("local_beta_theorem_p.csv");
+local_u_tau_Lp = readmatrix("local_u_tau_Lp.csv");
+local_y_tau_Lp = readmatrix("local_y_tau_Lp.csv");
+p_list = readmatrix("p_list.csv");
+u_tau_Linf = readmatrix("u_tau_Linf.csv");
+y_tau_Linf = readmatrix("y_tau_Linf.csv");
 
 
 colors = lines(16);
