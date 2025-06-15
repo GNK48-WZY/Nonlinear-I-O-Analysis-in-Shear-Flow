@@ -1,12 +1,12 @@
-Re_200_1e_6 = readtable("Re_200_1e_6.csv");
-Re_200_1e_4 = readtable("Re_200_1e_4.csv");
-Re_200_5e_3 = readtable("Re_200_5e_3.csv");
-Re_1000_1e_6 = readtable("Re_1000_1e_6.csv");
-Re_1900_1e_6 = readtable("Re_1900_1e_6.csv");
-t = readtable("t.csv");
-Upper_bound_1e_4 = readtable("Upper_bound_1e_4.csv");
-Upper_bound_1e_6 = readtable("Upper_bound_1e_6.csv");
-Upper_bound_5e_3 = readtable("Upper_bound_5e_3.csv");
+Re_200_1e_6 = readmatrix("Re_200_1e_6.csv");
+Re_200_1e_4 = readmatrix("Re_200_1e_4.csv");
+Re_200_5e_3 = readmatrix("Re_200_5e_3.csv");
+Re_1000_1e_6 = readmatrix("Re_1000_1e_6.csv");
+Re_1900_1e_6 = readmatrix("Re_1900_1e_6.csv");
+t = readmatrix("t.csv");
+Upper_bound_1e_4 = readmatrix("Upper_bound_1e_4.csv");
+Upper_bound_1e_6 = readmatrix("Upper_bound_1e_6.csv");
+Upper_bound_5e_3 = readmatrix("Upper_bound_5e_3.csv");
 
 
 
