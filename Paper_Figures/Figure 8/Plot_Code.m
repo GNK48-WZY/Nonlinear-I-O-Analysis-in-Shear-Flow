@@ -1,3 +1,5 @@
+clear all
+
 Re_list = logspace(log10(200), log10(2000), 16);  
 delta_list = logspace(-6, 0, 400);                
 forcing_bi = readmatrix("forcing_bi.csv");
