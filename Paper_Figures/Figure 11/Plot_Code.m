@@ -1,3 +1,4 @@
+clear all
 Re_list = readmatrix("Re_list.csv");
 delta_list = readmatrix("delta_list.csv");
 Gamma_theorem_e_3 = readmatrix("Gamma_theorem_e_3.csv");
