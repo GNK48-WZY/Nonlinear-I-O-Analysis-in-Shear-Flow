@@ -1,3 +1,5 @@
+clear all
+
 Gamma_theorem = readmatrix("Gamma_theorem.csv");
 Gamma_theorem_SOS = readmatrix("Gamma_theorem_SOS.csv");
 Re_list = readmatrix("Re_list.csv");
