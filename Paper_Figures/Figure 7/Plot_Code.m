@@ -1,3 +1,5 @@
+clear all
+
 Re_list = logspace(log10(200), log10(2000), 16);  
 L2_gain = readmatrix("L2_gain.csv");
 gamma_cor = readmatrix("gamma_cor.csv");
