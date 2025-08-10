@@ -1,3 +1,5 @@
+clear all
+
 unzip("no_forcing_Re_1000_1e_6.zip")
 unzip("no_forcing_Re_1900_1e_6.zip")
 unzip("no_forcing_Re_200_1e_6.zip")
