@@ -23,6 +23,7 @@ Upper_bound_5e_3 = readmatrix("Upper_bound_5e_3.csv");
 % Figure 3a:
 line_styles = {"-","--","-.",":",""};
 markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
+colors = lines(16);
 T = 70000;
 t = linspace(0, T, 1000000);
 figure;
