@@ -1,3 +1,12 @@
+unzip("Re_200_1e_6.zip")
+unzip("Re_200_1e_4.zip")
+unzip("Re_200_5e_3.zip")
+unzip("Re_1000_1e_6.zip")
+unzip("Re_1900_1e_6.zip")
+unzip("t.zip")
+unzip("Upper_bound_1e_4.zip")
+unzip("Upper_bound_1e_6.zip")
+unzip("Upper_bound_5e_3.zip")
 Re_200_1e_6 = readmatrix("Re_200_1e_6.csv");
 Re_200_1e_4 = readmatrix("Re_200_1e_4.csv");
 Re_200_5e_3 = readmatrix("Re_200_5e_3.csv");
