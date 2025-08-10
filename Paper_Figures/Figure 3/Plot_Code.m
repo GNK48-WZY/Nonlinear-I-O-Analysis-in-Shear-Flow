@@ -1,3 +1,5 @@
+clear all
+
 unzip("Re_200_1e_6.zip")
 unzip("Re_200_1e_4.zip")
 unzip("Re_200_5e_3.zip")
