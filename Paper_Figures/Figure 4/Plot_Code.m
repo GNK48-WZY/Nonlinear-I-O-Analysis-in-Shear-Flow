@@ -1,3 +1,11 @@
+unzip("no_forcing_Re_1000_1e_6.zip")
+unzip("no_forcing_Re_1900_1e_6.zip")
+unzip("no_forcing_Re_200_1e_6.zip")
+unzip("no_initial_Re_200_1e_6.zip")
+unzip("no_initial_Re_1000_1e_6.zip")
+unzip("no_initial_Re_1900_1e_6.zip")
+unzip("t.zip")
+
 Upper_bound_1e_6 = readmatrix("Upper_bound_1e_6.csv");
 no_forcing_Re_1000_1e_6 = readmatrix("no_forcing_Re_1000_1e_6.csv");
 no_forcing_Re_1900_1e_6 = readmatrix("no_forcing_Re_1900_1e_6.csv");
