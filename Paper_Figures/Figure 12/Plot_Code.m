@@ -1,5 +1,6 @@
+clear all
 Re_list = readmatrix("Re_list.csv");
-delta_list = readmatrix("delta_list.dat");
+delta_list = readmatrix("delta_list.csv");
 Gamma_theorem_e_6 = readmatrix("Gamma_theorem_e_6.csv");
 u_upper_bound_e_6 = readmatrix("u_upper_bound_e_6.csv");
 
