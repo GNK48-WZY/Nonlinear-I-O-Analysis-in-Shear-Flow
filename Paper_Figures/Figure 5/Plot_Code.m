@@ -1,3 +1,4 @@
+clear all
 beta_theorem_inf = readmatrix("beta_theorem_inf.csv");
 local_Gamma_theorem = readmatrix("local_Gamma_theorem.csv");
 local_beta_theorem_p = readmatrix("local_beta_theorem_p.csv");
