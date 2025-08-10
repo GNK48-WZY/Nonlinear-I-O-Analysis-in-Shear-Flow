@@ -1,3 +1,5 @@
+clear all
+
 Re_list = logspace(log10(200), log10(2000), 16);  
 forcing_bi = readmatrix("forcing_bi.csv");
 u_upper_bound_max = readmatrix("u_upper_bound_max.csv");
