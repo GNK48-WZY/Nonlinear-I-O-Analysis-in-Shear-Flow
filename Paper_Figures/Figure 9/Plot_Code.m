@@ -1,5 +1,9 @@
 % Figure 9a
 clear all
+Re_list = logspace(log10(200), log10(2000), 16);  
+forcing_bi_M_5_delta_400 = readmatrix("forcing_bi_M_5_delta_400.csv");
+forcing_bi_M_5_delta_40 = readmatrix("forcing_bi_M_5_delta_40.csv");
+forcing_bi_M_40_delta_40 = readmatrix("forcing_bi_M_40_delta_40.csv");
 
 line_width = 1.5;
 colors = lines(16);
@@ -9,18 +13,18 @@ line_width = 1.5;
 figure;
 max_forcing_bi_M_5_delta_400 = max(forcing_bi_M_5_delta_400, [], 2); 
 max_forcing_bi_M_5_delta_40 = max(forcing_bi_M_5_delta_40, [], 2);
-max_forcing_bi_M_40_delta_20 = max(forcing_bi_M_40_delta_20, [], 2);
-% max_forcing_bi_M_40_delta_40 = max(forcing_bi_M_40_delta_40, [], 2);
+% max_forcing_bi_M_40_delta_20 = max(forcing_bi_M_40_delta_20, [], 2);
+max_forcing_bi_M_40_delta_40 = max(forcing_bi_M_40_delta_40, [], 2);
 loglog(Re_list, max_forcing_bi_M_5_delta_400(:,:), line_styles{3}, 'LineWidth', line_width, 'Color', colors(3, :),'Marker', markers{1});
 % Retain the current plot and add the next plot
 hold on;
 loglog(Re_list, max_forcing_bi_M_5_delta_40(:, :), line_styles{1}, 'LineWidth', line_width, 'Color', colors(1, :),'Marker', markers{5});
-loglog(Re_list, max_forcing_bi_M_40_delta_20(:, :), line_styles{2}, 'LineWidth', line_width, 'Color', colors(2, :),'Marker', markers{2});
-% loglog(Re_list, max_forcing_bi_M_40_delta_40(:, :), line_styles{4}, 'LineWidth', line_width, 'Color', colors(4, :),'Marker', markers{3});
+% loglog(Re_list, max_forcing_bi_M_40_delta_20(:, :), line_styles{2}, 'LineWidth', line_width, 'Color', colors(2, :),'Marker', markers{2});
+loglog(Re_list, max_forcing_bi_M_40_delta_40(:, :), line_styles{4}, 'LineWidth', line_width, 'Color', colors(4, :),'Marker', markers{3});
 
 xlabel('Re', 'FontSize', 12,'Interpreter', 'latex');
 xlim([1e2, 2000]);  
-legend('$f_{c,\Pi}$, 400 $\delta$, M = 5','$f_{c,\Pi}$, 40 $\delta$, M = 5','$f_{c,\Pi}$, 20 $\delta$, M = 40','Interpreter', 'latex');
+legend('$f_{c,\Pi}$, 400 $\delta$, M = 5','$f_{c,\Pi}$, 40 $\delta$, M = 5','$f_{c,\Pi}$, 40 $\delta$, M = 40','Interpreter', 'latex');
 grid on;
 set(gca, 'FontSize', 12);
 
