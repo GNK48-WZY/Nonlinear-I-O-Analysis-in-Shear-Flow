@@ -1,3 +1,16 @@
+% Figure 8a
+clear all
+
+figure;
+scatter(M, forcing_list);
+xlabel('$M$', 'Interpreter', 'latex', 'FontSize', 28);
+ylabel('$f_\Pi$', 'Interpreter', 'latex', 'FontSize', 28);
+set(gca, 'FontSize', 12);
+grid on;
+
+
+
+% Figure 8b
 clear all
 
 Re_list = logspace(log10(200), log10(2000), 16);  
