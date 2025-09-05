@@ -1,6 +1,7 @@
 % Figure 8a
 clear all
-
+M = [5	10	20	30	40	50	60	70	80	90];
+forcing_list = readmatrix("forcing_list.csv");
 figure;
 scatter(M, forcing_list);
 xlabel('$M$', 'Interpreter', 'latex', 'FontSize', 28);
