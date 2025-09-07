@@ -15,7 +15,7 @@ grid on;
 clear all
 
 Re_list = logspace(log10(200), log10(2000), 16);  
-delta_list = logspace(-6, 0, 400);                
+delta_list = logspace(-6, 0, 40);                
 forcing_bi = readmatrix("forcing_bi_M_40_delta_40.csv");
 
 
