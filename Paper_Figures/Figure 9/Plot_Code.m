@@ -9,7 +9,6 @@ line_width = 1.5;
 colors = lines(16);
 line_styles = {"-","--","-.",":"};
 markers = {'+', 'o', '*', 'x', 's', 'd', '^', 'v', '>', '<', 'p', 'h'};
-line_width = 1.5;
 figure;
 max_forcing_bi_M_5_delta_400 = max(forcing_bi_M_5_delta_400, [], 2); 
 max_forcing_bi_M_5_delta_40 = max(forcing_bi_M_5_delta_40, [], 2);
@@ -38,7 +37,7 @@ legend("Position",[0.73899,0.49841,0.14821,0.14048])
 clear all
 
 Re_list = logspace(log10(200), log10(2000), 16);  
-forcing_bi = readmatrix("forcing_bi.csv");
+forcing_bi = readmatrix("forcing_bi_M_40_delta_40.csv");
 u_upper_bound_max = readmatrix("u_upper_bound_max.csv");
 u_upper_bound_max_SOS = readmatrix("u_upper_bound_max_SOS.csv");
 
