@@ -35,6 +35,7 @@
         end
     end
 %     xlim([1, 10000])
+    yline(delta,'k--','LineWidth',2);
     xlabel('$t$','Interpreter', 'latex');
     ylabel('$\|\mathbf{y}\|$','Interpreter', 'latex');
     set(gca, 'FontSize', 14);
