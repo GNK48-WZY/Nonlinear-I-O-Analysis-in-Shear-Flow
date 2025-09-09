@@ -2,7 +2,7 @@
 
 
 
-% Above threshold
+%Above threshold
     figure;
     axes('XScale', 'log', 'YScale', 'log')
     hold on;
