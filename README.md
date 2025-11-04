@@ -1,5 +1,19 @@
 # Nonlinear input-output analysis of transitional shear flows using small-signal finite-gain Lp stability
-arXiv link:  https://doi.org/10.48550/arXiv.2506.08129
+Publication Citation:  @article{pmnc-sdl2,
+  title = {Nonlinear input-output analysis of transitional shear flows using small-signal finite-gain ${\mathcal{L}}_{p}$ stability},
+  author = {Wei, Zhengyang and Liu, Chang},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {10},
+  pages = {103903},
+  numpages = {27},
+  year = {2025},
+  month = {Oct},
+  publisher = {American Physical Society},
+  doi = {10.1103/pmnc-sdl2},
+  url = {https://link.aps.org/doi/10.1103/pmnc-sdl2}
+}
+
 ## LMI
  This part includes the code for linear matrix inequality to search for the lyapunov functino to do the stability analysis as shown in Theorem 2 of our paper.
 ## SOS
